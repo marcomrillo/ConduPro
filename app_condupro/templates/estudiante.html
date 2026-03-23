@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Panel Estudiante</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Panel del Estudiante</h1>
+
+    <h2>Hola {{ nombre }} 👋</h2>
+
+    <hr>
+
+    <h3>Clases</h3>
+
+    <br><br>
+
+    <button>
+        Clases teóricas
+    </button>
+        
+
+    <br><br>
+
+    <button disabled>
+        Clase práctica (bloqueado hasta 10 asistencias)
+    </button>
+
+    <hr>
+
+    <h3>Progreso de clases</h3>
+
+    <p>{{ asistencias }} / 10 clases</p>
+
+    <div class="progress-bar">
+        <div class="progress"></div>
+    </div>
+
+    <br>
+
+    <a href="/login">Cerrar sesión</a>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    <h1>Bienvenido Profe {{ nombre }}</h1>
+
+    <div class="panel-clase">
+
+        <h2>Clase Teórica</h2>
+        <p>Aula principal</p>
+
+        <div class="acciones-profesor">
+
+<script>
+function abrirQR() {
+    document.getElementById("modalQR").style.display = "flex";
+}
+
+function cerrarQR() {
+    document.getElementById("modalQR").style.display = "none";
+}
+</script>
+
+
+ <button onclick="abrirQR()" class="btn-qr">
+    Mostrar QR de asistencia
+</button>
+
+<div id="modalQR" class="modal">
+
+    <div class="modal-contenido">
+
+        <!-- BOTÓN CERRAR -->
+        <span class="cerrar" onclick="cerrarQR()">&times;</span>
+
+        <h3>Escanea para registrar asistencia</h3>
+
+        <img src="/static/img/qr_asistencia.png" width="250">
+
+        <!-- BOTÓN EXTRA (más claro para el usuario) -->
+        <br><br>
+        <button onclick="cerrarQR()" class="btn-cerrar">
+            Cerrar
+        </button>
+
+    </div>
+
+</div>
+
+
+
+</div>
+            <form action="/finalizar_clase" method="post">
+                <button class="btn-finalizar">
+                    Finalizar clase
+                </button>
+            </form>
+
+        </div>
+
+
+    <div class="lista-estudiantes">
+
+        <h3>Estudiantes registrados</h3>
+
+        <ul>
+            {% for estudiante in estudiantes %}
+                <li>{{ estudiante.nombre }}</li>
+            {% endfor %}
+        </ul>
+
+    </div>
+
+</div>
+
+<script>
+
+function mostrarQR(){
+
+    let qr = document.getElementById("qr-container")
+
+    if(qr.style.display === "none"){
+        qr.style.display = "block"
+    }else{
+        qr.style.display = "none"
+    }
+
+}
+
+</script>
+<style>
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-contenido {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.cerrar {
+    float: right;
+    font-size: 25px;
+    cursor: pointer;
+}
+</style>
+{% endblock %}

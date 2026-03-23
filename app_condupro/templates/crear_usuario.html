@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crear Usuario</title>
+</head>
+<body>
+
+<h2>Crear Usuario (Administrador)</h2>
+
+{% if mensaje %}
+    <p style="color:green;">{{ mensaje }}</p>
+{% endif %}
+
+{% if error %}
+    <p style="color:red;">{{ error }}</p>
+{% endif %}
+
+<form action="/crear_usuario" method="post">
+
+    <label>Nombre:</label>
+    <input type="text" name="nombre" required><br><br>
+
+    <label>Correo:</label>
+    <input type="email" name="correo" required><br><br>
+
+    <label>Password:</label>
+    <input type="password" name="password" required><br><br>
+
+    <label>Rol:</label>
+    <select name="rol">
+        <option value="estudiante">Estudiante</option>
+        <option value="profesor">Profesor</option>
+        <option value="admin">Admin</option>
+    </select><br><br>
+
+    <button type="submit">Crear Usuario</button>
+
+</form>
+
+<br>
+<a href="/">Cerrar sesión</a>
+
+</body>
+</html>
