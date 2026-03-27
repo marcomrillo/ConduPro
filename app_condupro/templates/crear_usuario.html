@@ -1,44 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Crear Usuario</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Usuario — ConduPro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
 
-<h2>Crear Usuario (Administrador)</h2>
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span class="brand-logo">ConduPro</span>
+        <span class="brand-dot"></span>
+    </div>
+    <div class="navbar-links">
+        <span class="nav-role-badge nav-role-admin">Admin</span>
+        <a href="/" class="nav-logout">Cerrar sesión</a>
+    </div>
+</nav>
 
-{% if mensaje %}
-    <p style="color:green;">{{ mensaje }}</p>
-{% endif %}
+<div class="main-content">
 
-{% if error %}
-    <p style="color:red;">{{ error }}</p>
-{% endif %}
+    <div class="auth-card">
 
-<form action="/crear_usuario" method="post">
+        <h2 class="auth-card-title">Crear Usuario</h2>
+        <p class="auth-card-sub">Panel de administración</p>
 
-    <label>Nombre:</label>
-    <input type="text" name="nombre" required><br><br>
+        {% if mensaje %}
+        <div class="alert alert-success">✅ {{ mensaje }}</div>
+        {% endif %}
 
-    <label>Correo:</label>
-    <input type="email" name="correo" required><br><br>
+        {% if error %}
+        <div class="alert alert-error">⚠️ {{ error }}</div>
+        {% endif %}
 
-    <label>Password:</label>
-    <input type="password" name="password" required><br><br>
+        <!-- FORM ORIGINAL intacto: action, names, method -->
+        <form action="/crear_usuario" method="post" class="form-box">
 
-    <label>Rol:</label>
-    <select name="rol">
-        <option value="estudiante">Estudiante</option>
-        <option value="profesor">Profesor</option>
-        <option value="admin">Admin</option>
-    </select><br><br>
+            <label>Nombre:</label>
+            <input type="text" name="nombre" placeholder="Nombre completo" required>
 
-    <button type="submit">Crear Usuario</button>
+            <label>Correo:</label>
+            <input type="email" name="correo" placeholder="correo@ejemplo.com" required>
 
-</form>
+            <label>Password:</label>
+            <input type="password" name="password" placeholder="••••••••" required>
 
-<br>
-<a href="/">Cerrar sesión</a>
+            <label>Rol:</label>
+            <select name="rol" class="form-select">
+                <option value="estudiante">Estudiante</option>
+                <option value="profesor">Profesor</option>
+                <option value="admin">Admin</option>
+            </select>
+
+            <button type="submit" class="btn-primary btn-full" style="margin-top:1.2rem;">
+                Crear Usuario
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+
+        </form>
+
+        <p class="auth-footer-link"><a href="/">Cerrar sesión</a></p>
+
+    </div>
+
+</div>
 
 </body>
 </html>

@@ -2,25 +2,32 @@
 
 {% block content %}
 
-<h2>Iniciar Sesión</h2>
+<div class="auth-card">
 
-{% if error %}
-<p class="error">{{ error }}</p>
-{% endif %}
+    <h2 class="auth-card-title">Iniciar Sesión</h2>
+    <p class="auth-card-sub">Ingresa tus credenciales para continuar</p>
 
-<form action="/login" method="post" class="form-box">
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
 
-    <label>Correo:</label>
-    <input type="email" name="correo" required>
+    <form action="/login" method="post" class="form-box">
 
-    <label>Password:</label>
-    <input type="password" name="password" required>
+        <label>Correo:</label>
+        <input type="email" name="correo" placeholder="tu@correo.com" required>
 
-    <button type="submit">Ingresar</button>
-</form>
+        <label>Password:</label>
+        <input type="password" name="password" placeholder="••••••••" required>
 
-<p>
-    ¿No tienes cuenta? <a href="/registro">Registrarse</a>
-</p>
+        <button type="submit" class="btn-primary btn-full">
+            Ingresar
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+
+    </form>
+
+    <p class="auth-footer-link">¿No tienes cuenta? <a href="/registro">Registrarse</a></p>
+
+</div>
 
 {% endblock %}

@@ -53,7 +53,7 @@ def actualizar_asistencias():
             """, (int(cantidad), str(correo).strip()))
 
         conn.commit()
-        print(f"💾 {conn.affected_rows()} filas actualizadas en MySQL.")
+        print(f"{cursor.rowcount} filas actualizadas en MySQL.")
         
         cursor.close()
         conn.close()

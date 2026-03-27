@@ -1,21 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ConduPro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
 
     <nav class="navbar">
-        <h2>ConduPro</h2>
-        <div>
-            <a href="/">Inicio</a>
-            <a href="/login">Login</a>
-            <a href="/registro">Registro</a>
+        <div class="navbar-brand">
+            <span class="brand-logo">ConduPro</span>
+            <span class="brand-dot"></span>
+        </div>
+        <div class="navbar-links">
+            <a href="/" class="nav-link">Inicio</a>
+            <a href="/login" class="nav-link">Login</a>
+            <a href="/registro" class="nav-link">Registro</a>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="main-content">
         {% block content %}
         {% endblock %}
     </div>

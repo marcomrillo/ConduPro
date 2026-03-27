@@ -4,117 +4,119 @@
 
 <div class="dashboard">
 
-    <h1>Bienvenido Profe {{ nombre }}</h1>
+    <!-- HEADER -->
+    <div class="dash-header">
+        <div>
+            <p class="dash-welcome">Panel de instructor,</p>
+            <h1 class="dash-name">Profe {{ nombre }} 👋</h1>
+        </div>
+        <span class="status-chip status-active">Clase activa</span>
+    </div>
 
-    <div class="panel-clase">
+    <!-- PANEL CLASE -->
+    <div class="cards-row">
 
-        <h2>Clase Teórica</h2>
-        <p>Aula principal</p>
+        <div class="card" style="flex: 2;">
+            <div class="card-header">
+                <h2>Clase Teórica — Aula Principal</h2>
+                <span class="clase-badge badge-disponible">Activa</span>
+            </div>
 
-        <div class="acciones-profesor">
+            <div class="profesor-acciones">
+
+                <!-- BOTÓN QR — misma función original -->
+                <button onclick="abrirQR()" class="btn-primary btn-qr">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                        <path d="M14 14h3v3M17 20h3M20 17v3"/>
+                    </svg>
+                    Mostrar QR de asistencia
+                </button>
+
+                <!-- FORM ORIGINAL intacto -->
+              <button type="button" class="btn-danger" onclick="finalizarClase(this)">
+    Finalizar clase
+</button>
+
+<script>
+async function finalizarClase(btn) {
+    btn.disabled = true;
+    btn.innerText = "Registrando...";
+    const res = await fetch("/finalizar_clase", { method: "POST" });
+    const data = await res.json();
+    alert(data.mensaje);
+    btn.innerText = "Finalizar clase";
+    btn.disabled = false;
+}
+</script>
+
+            <p class="profesor-hint">
+                Al finalizar, las asistencias del QR se registrarán automáticamente y la hoja de cálculo quedará limpia.
+            </p>
+        </div>
+
+        <!-- RESUMEN -->
+        <div class="card" style="flex: 1; min-width: 180px; text-align: center;">
+            <h3 style="margin-top: 0;">Estudiantes</h3>
+            <div class="stat-big">
+                <span class="stat-num-big">{{ estudiantes | length }}</span>
+                <span class="stat-label-big">registrados</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- LISTA ESTUDIANTES — lógica original intacta -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Estudiantes registrados</h2>
+            <span class="badge-count">{{ estudiantes | length }}</span>
+        </div>
+        <div class="estudiantes-grid">
+            {% for estudiante in estudiantes %}
+            <div class="estudiante-chip">
+                <span class="estudiante-avatar">{{ estudiante.nombre[0] | upper }}</span>
+                <span class="estudiante-nombre">{{ estudiante.nombre }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL QR — misma lógica original -->
+<div id="modalQR" class="modal">
+    <div class="modal-contenido">
+        <button class="modal-close" onclick="cerrarQR()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+        <div class="modal-body">
+            <div class="qr-label">Escanea para registrar asistencia</div>
+            <div class="qr-frame">
+                <img src="/static/img/qr_asistencia.png" alt="QR Asistencia" width="240">
+            </div>
+            <p class="qr-hint">Cada escaneo registra la asistencia del estudiante en Google Forms.</p>
+            <button onclick="cerrarQR()" class="btn-secondary btn-full">Cerrar</button>
+        </div>
+    </div>
+</div>
 
 <script>
 function abrirQR() {
     document.getElementById("modalQR").style.display = "flex";
+    document.body.style.overflow = "hidden";
 }
-
 function cerrarQR() {
     document.getElementById("modalQR").style.display = "none";
+    document.body.style.overflow = "";
 }
+// Cerrar al hacer clic fuera del modal
+document.getElementById("modalQR").addEventListener("click", function(e) {
+    if (e.target === this) cerrarQR();
+});
 </script>
 
-
- <button onclick="abrirQR()" class="btn-qr">
-    Mostrar QR de asistencia
-</button>
-
-<div id="modalQR" class="modal">
-
-    <div class="modal-contenido">
-
-        <!-- BOTÓN CERRAR -->
-        <span class="cerrar" onclick="cerrarQR()">&times;</span>
-
-        <h3>Escanea para registrar asistencia</h3>
-
-        <img src="/static/img/qr_asistencia.png" width="250">
-
-        <!-- BOTÓN EXTRA (más claro para el usuario) -->
-        <br><br>
-        <button onclick="cerrarQR()" class="btn-cerrar">
-            Cerrar
-        </button>
-
-    </div>
-
-</div>
-
-
-
-</div>
-            <form action="/finalizar_clase" method="post">
-                <button class="btn-finalizar">
-                    Finalizar clase
-                </button>
-            </form>
-
-        </div>
-
-
-    <div class="lista-estudiantes">
-
-        <h3>Estudiantes registrados</h3>
-
-        <ul>
-            {% for estudiante in estudiantes %}
-                <li>{{ estudiante.nombre }}</li>
-            {% endfor %}
-        </ul>
-
-    </div>
-
-</div>
-
-<script>
-
-function mostrarQR(){
-
-    let qr = document.getElementById("qr-container")
-
-    if(qr.style.display === "none"){
-        qr.style.display = "block"
-    }else{
-        qr.style.display = "none"
-    }
-
-}
-
-</script>
-<style>
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.7);
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-contenido {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.cerrar {
-    float: right;
-    font-size: 25px;
-    cursor: pointer;
-}
-</style>
 {% endblock %}

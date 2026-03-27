@@ -1,11 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ConduPro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
-    <h1>Bienvenido a ConduPro</h1>
-    <p>Plataforma de gestión para academias de conducción.</p>
-    <a href="/login">Iniciar sesión</a>
+
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span class="brand-logo">ConduPro</span>
+        <span class="brand-dot"></span>
+    </div>
+    <div class="navbar-links">
+        <a href="/login" class="nav-link">Iniciar sesión</a>
+        <a href="/registro" class="btn-primary" style="padding: 8px 18px; font-size: 0.88rem;">Registrarse</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="landing-hero">
+    <div class="landing-hero-inner">
+        <span class="landing-tag">Inicia Hoy!</span>
+        <h1 class="landing-title">comienza tu aprendizaje y CONDUCE como un PRO</h1>
+        <p class="landing-sub">
+            ConduPro centraliza estudiantes, instructores y horarios en un solo lugar.
+            Gestiona tus clases...
+        </p>
+        <div class="landing-cta">
+            <a href="/registro" class="btn-primary">Crear cuenta gratis</a>
+            <a href="/login" class="btn-secondary">Ya tengo cuenta</a>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="landing-features">
+    <div class="landing-features-inner">
+
+        <div class="feature-card">
+            <span class="feature-icon">📋</span>
+            <h3>Control de asistencia</h3>
+            <p>Los estudiantes registran su asistencia escaneando un QR</p>
+        </div>
+
+        <div class="feature-card">
+            <span class="feature-icon">📅</span>
+            <h3>Horarios sin conflictos</h3>
+            <p>planifica tus clases sin preocupaciones</p>
+        </div>
+
+        <div class="feature-card">
+            <span class="feature-icon">📊</span>
+            <h3>Visibilidad total</h3>
+            <p>revisa tu progreso</p>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="landing-footer">
+    <p>© 2026 ConduPro · Hecho para escuelas de conducción en Colombia</p>
+</footer>
+
 </body>
 </html>

@@ -43,6 +43,6 @@ def limpiar_sheet():
     sheet = gc.open_by_key(spreadsheet_id).sheet1
 
     # 🔥 SOLO BORRAR FILAS DESPUÉS DEL HEADER
-    sheet.resize(rows=1)
+    sheet.resize(rows=2)
 
     print("🧹 Datos limpiados, encabezados conservados")

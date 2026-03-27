@@ -1,2 +1,177 @@
-<h1>Panel Administrador</h1>
-<p>Bienvenido {{ nombre }}</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin — ConduPro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span class="brand-logo">ConduPro</span>
+        <span class="brand-dot"></span>
+    </div>
+    <div class="navbar-links">
+        <span class="nav-role-badge nav-role-admin">Admin</span>
+        <a href="/login" class="nav-logout">Cerrar sesión</a>
+    </div>
+</nav>
+
+<div class="main-content">
+<div class="dashboard">
+
+    <!-- HEADER — datos del original: {{ nombre }} -->
+    <div class="dash-header">
+        <div>
+            <p class="dash-welcome">Panel de administración,</p>
+            <h1 class="dash-name">{{ nombre }} ⚙️</h1>
+        </div>
+        <span class="status-chip status-admin">Administrador</span>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon kpi-students">👨‍🎓</div>
+            <div class="kpi-info">
+                <span class="kpi-num">{{ total_estudiantes }}</span>
+                <span class="kpi-label">Estudiantes</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon kpi-instructors">👨‍🏫</div>
+            <div class="kpi-info">
+                <span class="kpi-num">{{ total_profesores }}</span>
+                <span class="kpi-label">Instructores</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon kpi-vehicles">🚗</div>
+            <div class="kpi-info">
+                <span class="kpi-num">{{ total_vehiculos }}</span>
+                <span class="kpi-label">Vehículos</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon kpi-classes">📅</div>
+            <div class="kpi-info">
+                <span class="kpi-num">{{ clases_hoy }}</span>
+                <span class="kpi-label">Clases hoy</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-grid">
+
+        <!-- CREAR USUARIO — form original intacto, action="/crear_usuario" -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Crear usuario</h2>
+            </div>
+
+            {% if mensaje %}
+            <div class="alert alert-success">✅ {{ mensaje }}</div>
+            {% endif %}
+            {% if error %}
+            <div class="alert alert-error">⚠️ {{ error }}</div>
+            {% endif %}
+
+            <form action="/crear_usuario" method="post" class="form-box">
+
+                <label>Nombre:</label>
+                <input type="text" name="nombre" placeholder="Nombre completo" required>
+
+                <label>Correo:</label>
+                <input type="email" name="correo" placeholder="correo@ejemplo.com" required>
+
+                <label>Password:</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+
+                <label>Rol:</label>
+                <select name="rol" class="form-select">
+                    <option value="estudiante">Estudiante</option>
+                    <option value="profesor">Profesor</option>
+                    <option value="admin">Admin</option>
+                </select>
+
+                <button type="submit" class="btn-primary btn-full" style="margin-top:1.2rem;">
+                    Crear Usuario
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+
+            </form>
+        </div>
+
+        <!-- TABLA USUARIOS -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Usuarios registrados</h2>
+                <span class="badge-count">{{ usuarios | length }}</span>
+            </div>
+
+            <div class="usuarios-tabla">
+                <div class="tabla-header">
+                    <span>Nombre</span>
+                    <span>Correo</span>
+                    <span>Rol</span>
+                    <span>Asistencias</span>
+                </div>
+                {% for u in usuarios %}
+                <div class="tabla-row">
+                    <span class="tabla-nombre">
+                        <span class="estudiante-avatar avatar-sm">{{ u.nombre[0] | upper }}</span>
+                        {{ u.nombre }}
+                    </span>
+                    <span class="tabla-correo">{{ u.correo }}</span>
+                    <span>
+                        <span class="role-chip role-{{ u.rol }}">{{ u.rol }}</span>
+                    </span>
+                    <span class="tabla-asistencias">
+                        {% if u.rol == 'estudiante' %}
+                            {{ u.asistencias }} / 10
+                        {% else %}
+                            —
+                        {% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- HERRAMIENTAS -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Herramientas operativas</h2>
+        </div>
+        <div class="tools-grid">
+            <a href="/actualizar_asistencias" class="tool-btn">
+                <span class="tool-icon">🔄</span>
+                <span>Sincronizar asistencias</span>
+            </a>
+            <div class="tool-btn tool-disabled">
+                <span class="tool-icon">📊</span>
+                <span>Reportes (próximamente)</span>
+            </div>
+            <div class="tool-btn tool-disabled">
+                <span class="tool-icon">🚘</span>
+                <span>Vehículos (próximamente)</span>
+            </div>
+            <div class="tool-btn tool-disabled">
+                <span class="tool-icon">📅</span>
+                <span>Horarios (próximamente)</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+</body>
+</html>
