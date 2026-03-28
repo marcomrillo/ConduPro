@@ -1,73 +1,127 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Profesor — ConduPro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
 
-{% block content %}
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span class="brand-logo">ConduPro</span>
+        <span class="brand-dot"></span>
+    </div>
+    <div class="navbar-links">
+        <span class="nav-role-badge">Instructor</span>
+        <a href="/login" class="nav-logout">Cerrar sesión</a>
+    </div>
+</nav>
 
+<div class="main-content">
 <div class="dashboard">
 
-    <!-- HEADER -->
     <div class="dash-header">
         <div>
             <p class="dash-welcome">Panel de instructor,</p>
             <h1 class="dash-name">Profe {{ nombre }} 👋</h1>
         </div>
-        <span class="status-chip status-active">Clase activa</span>
+        <span class="status-chip status-active">Instructor</span>
     </div>
 
-    <!-- PANEL CLASE -->
+    {% if clase %}
     <div class="cards-row">
 
         <div class="card" style="flex: 2;">
             <div class="card-header">
-                <h2>Clase Teórica — Aula Principal</h2>
-                <span class="clase-badge badge-disponible">Activa</span>
+                <h2>Clase asignada</h2>
+                {% if clase.estado == 'en_espera' %}
+                    <span class="estado-chip estado-en_espera">En espera</span>
+                {% elif clase.estado == 'en_curso' %}
+                    <span class="estado-chip estado-en_curso">En curso</span>
+                {% else %}
+                    <span class="estado-chip estado-finalizada">Finalizada</span>
+                {% endif %}
+            </div>
+
+            <div class="clase-info-grid">
+                <div class="clase-info-item">
+                    <span class="clase-info-label">Fecha</span>
+                    <span class="clase-info-value">{{ clase.fecha }}</span>
+                </div>
+                <div class="clase-info-item">
+                    <span class="clase-info-label">Hora</span>
+                    <span class="clase-info-value">{{ clase.hora }}</span>
+                </div>
+                <div class="clase-info-item">
+                    <span class="clase-info-label">Tipo</span>
+                    <span class="clase-info-value">{{ clase.tipo | capitalize }}</span>
+                </div>
+                <div class="clase-info-item">
+                    <span class="clase-info-label">Inscritos</span>
+                    <span class="clase-info-value" id="num-inscritos">{{ inscritos }} / {{ clase.cupos_total }}</span>
+                </div>
             </div>
 
             <div class="profesor-acciones">
 
-                <!-- BOTÓN QR — misma función original -->
+                <!-- INICIAR -->
+                <button onclick="iniciarClase(this)" class="btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    Iniciar clase
+                </button>
+
+                <!-- QR -->
                 <button onclick="abrirQR()" class="btn-primary btn-qr">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                         <rect x="3" y="14" width="7" height="7"/>
                         <path d="M14 14h3v3M17 20h3M20 17v3"/>
                     </svg>
-                    Mostrar QR de asistencia
+                    Mostrar QR
                 </button>
 
-                <!-- FORM ORIGINAL intacto -->
-              <button type="button" class="btn-danger" onclick="finalizarClase(this)">
-    Finalizar clase
-</button>
+                <!-- FINALIZAR -->
+                <button onclick="finalizarClase(this)" class="btn-danger">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Finalizar clase
+                </button>
 
-<script>
-async function finalizarClase(btn) {
-    btn.disabled = true;
-    btn.innerText = "Registrando...";
-    const res = await fetch("/finalizar_clase", { method: "POST" });
-    const data = await res.json();
-    alert(data.mensaje);
-    btn.innerText = "Finalizar clase";
-    btn.disabled = false;
-}
-</script>
+            </div>
 
             <p class="profesor-hint">
-                Al finalizar, las asistencias del QR se registrarán automáticamente y la hoja de cálculo quedará limpia.
+                1. <strong>Iniciar clase</strong> — activa la sesión. 
+                2. <strong>Mostrar QR</strong> — los estudiantes escanean para registrar asistencia. 
+                3. <strong>Finalizar clase</strong> — sincroniza asistencias y cierra la sesión.
             </p>
         </div>
 
-        <!-- RESUMEN -->
         <div class="card" style="flex: 1; min-width: 180px; text-align: center;">
-            <h3 style="margin-top: 0;">Estudiantes</h3>
+            <h3 style="margin-top: 0;">Inscritos</h3>
             <div class="stat-big">
-                <span class="stat-num-big">{{ estudiantes | length }}</span>
-                <span class="stat-label-big">registrados</span>
+                <span class="stat-num-big" id="contador-grande">{{ inscritos }}</span>
+                <span class="stat-label-big">de {{ clase.cupos_total }} cupos</span>
             </div>
         </div>
 
     </div>
 
-    <!-- LISTA ESTUDIANTES — lógica original intacta -->
+    {% else %}
+    <div class="card">
+        <p style="color: var(--text-muted); text-align: center; padding: 2rem 0;">
+            No hay ninguna clase activa actualmente.
+        </p>
+    </div>
+    {% endif %}
+
     <div class="card">
         <div class="card-header">
             <h2>Estudiantes registrados</h2>
@@ -84,8 +138,9 @@ async function finalizarClase(btn) {
     </div>
 
 </div>
+</div>
 
-<!-- MODAL QR — misma lógica original -->
+<!-- MODAL QR -->
 <div id="modalQR" class="modal">
     <div class="modal-contenido">
         <button class="modal-close" onclick="cerrarQR()">
@@ -98,13 +153,14 @@ async function finalizarClase(btn) {
             <div class="qr-frame">
                 <img src="/static/img/qr_asistencia.png" alt="QR Asistencia" width="240">
             </div>
-            <p class="qr-hint">Cada escaneo registra la asistencia del estudiante en Google Forms.</p>
+            <p class="qr-hint">Cada escaneo registra la asistencia en Google Forms.</p>
             <button onclick="cerrarQR()" class="btn-secondary btn-full">Cerrar</button>
         </div>
     </div>
 </div>
 
 <script>
+// ── MODAL QR ──
 function abrirQR() {
     document.getElementById("modalQR").style.display = "flex";
     document.body.style.overflow = "hidden";
@@ -113,10 +169,44 @@ function cerrarQR() {
     document.getElementById("modalQR").style.display = "none";
     document.body.style.overflow = "";
 }
-// Cerrar al hacer clic fuera del modal
 document.getElementById("modalQR").addEventListener("click", function(e) {
     if (e.target === this) cerrarQR();
 });
-</script>
 
-{% endblock %}
+// ── INICIAR CLASE ──
+async function iniciarClase(btn) {
+    btn.disabled = true;
+    btn.innerText = "Iniciando...";
+    try {
+        const res = await fetch("/iniciar_clase", { method: "POST" });
+        const data = await res.json();
+        alert(data.mensaje);
+        location.reload();
+    } catch(e) {
+        alert("Error al iniciar clase");
+        btn.disabled = false;
+        btn.innerText = "Iniciar clase";
+    }
+}
+
+// ── FINALIZAR CLASE ──
+async function finalizarClase(btn) {
+    btn.disabled = true;
+    btn.innerText = "Registrando...";
+    try {
+        const res = await fetch("/finalizar_clase", { method: "POST" });
+        const data = await res.json();
+        alert(data.mensaje);
+        location.reload();
+    } catch(e) {
+        alert("Error al finalizar clase");
+        btn.disabled = false;
+        btn.innerText = "Finalizar clase";
+    }
+}
+</script>
+<footer class="landing-footer">
+    <p>© 2026 ConduPro · Hecho para escuelas de conducción en Colombia</p>
+</footer>
+</body>
+</html>

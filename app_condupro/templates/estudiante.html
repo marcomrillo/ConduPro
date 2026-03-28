@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
-
 <body>
 
 <nav class="navbar">
@@ -26,13 +25,57 @@
 <div class="main-content">
 <div class="dashboard">
 
-    <!-- HEADER -->
     <div class="dash-header">
         <div>
             <p class="dash-welcome">Bienvenido de vuelta,</p>
             <h1 class="dash-name">{{ nombre }} 👋</h1>
         </div>
         <span class="status-chip status-active">Matrícula activa</span>
+    </div>
+
+    <!-- PRÓXIMA CLASE -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Próxima clase disponible</h2>
+        </div>
+
+        {% if clase_proxima %}
+        <div class="clase-info-grid">
+            <div class="clase-info-item">
+                <span class="clase-info-label">Fecha</span>
+                <span class="clase-info-value">{{ clase_proxima.fecha }}</span>
+            </div>
+            <div class="clase-info-item">
+                <span class="clase-info-label">Hora</span>
+                <span class="clase-info-value">{{ clase_proxima.hora }}</span>
+            </div>
+            <div class="clase-info-item">
+                <span class="clase-info-label">Tipo</span>
+                <span class="clase-info-value">{{ clase_proxima.tipo | capitalize }}</span>
+            </div>
+            <div class="clase-info-item">
+                <span class="clase-info-label">Cupos</span>
+                <span class="clase-info-value">{{ clase_proxima.cupos_disponibles }} disponibles</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 1.2rem;">
+            {% if ya_inscrito %}
+                <div class="alert alert-success">✅ Ya estás inscrito en esta clase</div>
+            {% elif clase_proxima.tipo == 'practica' and asistencias < 10 %}
+                <div class="alert alert-error">🔒 Necesitas 10 asistencias para inscribirte a la práctica</div>
+            {% elif clase_proxima.cupos_disponibles == 0 %}
+                <div class="alert alert-error">Sin cupos disponibles</div>
+            {% else %}
+                <button onclick="inscribirse(this)" class="btn-primary">
+                    Inscribirme a esta clase
+                </button>
+            {% endif %}
+        </div>
+
+        {% else %}
+        <p style="color: var(--text-muted); padding: 1rem 0;">No hay clases programadas por el momento.</p>
+        {% endif %}
     </div>
 
     <!-- PROGRESO -->
@@ -42,11 +85,13 @@
             <span class="progress-fraction">{{ asistencias }} / 10 clases</span>
         </div>
 
-        <div class="progress-track">
-          {% set porcentaje = asistencias * 10 %}
-{% if porcentaje > 100 %}{% set porcentaje = 100 %}{% endif %}
+        {% set porcentaje = asistencias * 10 %}
+        {% if porcentaje > 100 %}{% set porcentaje = 100 %}{% endif %}
 
-<div class="progress-fill" style="width: {{ porcentaje }}%"></div>
+        <div class="progress-track">
+            <div class="progress-fill" style="--ancho: {{ porcentaje }}%"></div>
+        </div>
+
         <div class="progress-steps">
             {% for i in range(1, 11) %}
             <div class="step {% if i <= asistencias %}step-done{% endif %}">{{ i }}</div>
@@ -54,9 +99,7 @@
         </div>
 
         {% if asistencias >= 10 %}
-        <div class="alert alert-success" style="margin-top:1rem;">
-            ✅ ¡Completaste las clases teóricas! Ya puedes tomar tu clase práctica.
-        </div>
+        <div class="alert alert-success" style="margin-top:1rem;">✅ ¡Completaste las clases teóricas!</div>
         {% else %}
         <p class="progress-hint">Te faltan {{ 10 - asistencias }} clase(s) para desbloquear la práctica.</p>
         {% endif %}
@@ -64,14 +107,12 @@
 
     <!-- CLASES -->
     <div class="cards-row">
-
         <div class="card card-clase">
             <div class="clase-icon">📚</div>
-            <h3>Clases Teóricas</h3>
+            <h3>Clase Teórica</h3>
             <p>Fundamentos de conducción, señales y normativa vial.</p>
             <span class="clase-badge badge-disponible">Disponible</span>
         </div>
-
         <div class="card card-clase {% if asistencias < 10 %}card-locked{% endif %}">
             <div class="clase-icon">🚗</div>
             <h3>Clase Práctica</h3>
@@ -82,7 +123,6 @@
                 <span class="clase-badge badge-bloqueado">🔒 Requiere 10 asistencias</span>
             {% endif %}
         </div>
-
     </div>
 
     <!-- HISTORIAL -->
@@ -105,7 +145,29 @@
 </div>
 </div>
 
+<script>
+    // Correo del estudiante inyectado desde Jinja2
+    const correoEstudiante = "{{ correo }}";
+    const claseId = {{ clase_proxima.id if clase_proxima else 0 }};
+
+    async function inscribirse(btn) {
+        btn.disabled = true;
+        btn.innerText = "Inscribiendo...";
+        const res = await fetch("/inscribirse", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ clase_id: claseId, correo: correoEstudiante })
+        });
+        const data = await res.json();
+        alert(data.mensaje);
+        if (data.ok) location.reload();
+        else { btn.disabled = false; btn.innerText = "Inscribirme a esta clase"; }
+    }
+</script>
+
+<footer class="landing-footer">
+    <p>© 2026 ConduPro · Hecho para escuelas de conducción en Colombia</p>
+</footer>
 
 </body>
-
 </html>

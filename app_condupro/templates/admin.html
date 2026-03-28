@@ -25,7 +25,7 @@
 <div class="main-content">
 <div class="dashboard">
 
-    <!-- HEADER — datos del original: {{ nombre }} -->
+    <!-- HEADER -->
     <div class="dash-header">
         <div>
             <p class="dash-welcome">Panel de administración,</p>
@@ -51,24 +51,132 @@
             </div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-icon kpi-vehicles">🚗</div>
+            <div class="kpi-icon kpi-classes">📅</div>
             <div class="kpi-info">
-                <span class="kpi-num">{{ total_vehiculos }}</span>
-                <span class="kpi-label">Vehículos</span>
+                <span class="kpi-num">{{ total_inscritos }}</span>
+                <span class="kpi-label">Inscritos en clase activa</span>
             </div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-icon kpi-classes">📅</div>
+            <div class="kpi-icon kpi-vehicles">🏫</div>
             <div class="kpi-info">
-                <span class="kpi-num">{{ clases_hoy }}</span>
-                <span class="kpi-label">Clases hoy</span>
+                <span class="kpi-num">
+                    {% if clase_activa %}
+                        <span class="estado-chip estado-{{ clase_activa.estado }}">{{ clase_activa.estado | replace('_', ' ') }}</span>
+                    {% else %}
+                        —
+                    {% endif %}
+                </span>
+                <span class="kpi-label">Estado clase activa</span>
             </div>
         </div>
     </div>
 
+    <!-- CLASE ACTIVA + CREAR CLASE -->
     <div class="admin-grid">
 
-        <!-- CREAR USUARIO — form original intacto, action="/crear_usuario" -->
+        <!-- CLASE ACTIVA -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Clase activa</h2>
+            </div>
+
+            {% if mensaje_clase %}
+            <div class="alert alert-success">✅ {{ mensaje_clase }}</div>
+            {% endif %}
+            {% if error_clase %}
+            <div class="alert alert-error">⚠️ {{ error_clase }}</div>
+            {% endif %}
+
+            {% if clase_activa %}
+            <div class="clase-info-grid">
+                <div class="clase-info-item">
+                    <span class="clase-info-label">Fecha</span>
+                    <span class="clase-info-value">{{ clase_activa.fecha }}</span>
+                </div>
+                <div class="clase-info-item">
+                    <span class="clase-info-label">Hora</span>
+                    <span class="clase-info-value">{{ clase_activa.hora }}</span>
+                </div>
+                <div class="clase-info-item">
+                    <span class="clase-info-label">Tipo</span>
+                    <span class="clase-info-value">{{ clase_activa.tipo | capitalize }}</span>
+                </div>
+                <div class="clase-info-item">
+                    <span class="clase-info-label">Instructor</span>
+                    <span class="clase-info-value">{{ clase_activa.instructor_correo or '—' }}</span>
+                </div>
+                <div class="clase-info-item">
+                    <span class="clase-info-label">Cupos</span>
+                    <span class="clase-info-value">{{ clase_activa.cupos_disponibles }} / {{ clase_activa.cupos_total }}</span>
+                </div>
+                <div class="clase-info-item">
+                    <span class="clase-info-label">Estado</span>
+                    <span class="estado-chip estado-{{ clase_activa.estado }}">{{ clase_activa.estado | replace('_', ' ') }}</span>
+                </div>
+            </div>
+
+            <!-- EDITAR FECHA Y HORA -->
+            {% if clase_activa.estado == 'en_espera' %}
+            <form action="/editar_clase" method="post" class="form-box" style="margin-top: 1.2rem;">
+                <input type="hidden" name="clase_id" value="{{ clase_activa.id }}">
+                <label>Nueva fecha</label>
+                <input type="date" name="fecha" value="{{ clase_activa.fecha }}" required>
+                <label>Nueva hora</label>
+                <input type="time" name="hora" value="{{ clase_activa.hora }}" required>
+                <button type="submit" class="btn-secondary" style="margin-top: 1rem;">
+                    Actualizar fecha y hora
+                </button>
+            </form>
+            {% endif %}
+
+            {% else %}
+            <p style="color: var(--text-muted); padding: 1rem 0;">No hay ninguna clase activa.</p>
+            {% endif %}
+        </div>
+
+        <!-- CREAR CLASE -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Crear nueva clase</h2>
+            </div>
+
+            <form action="/crear_clase" method="post" class="form-box">
+                <label>Fecha</label>
+                <input type="date" name="fecha" required>
+
+                <label>Hora</label>
+                <input type="time" name="hora" required>
+
+                <label>Tipo</label>
+                <select name="tipo" class="form-select">
+                    <option value="teorica">Teórica</option>
+                    <option value="practica">Práctica</option>
+                </select>
+
+                <label>Instructor (correo)</label>
+                <select name="instructor_correo" class="form-select">
+                    <option value="">Sin asignar</option>
+                    {% for p in profesores %}
+                    <option value="{{ p.correo }}">{{ p.nombre }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Cupos</label>
+                <input type="number" name="cupos_total" value="10" min="1" max="50" required>
+
+                <button type="submit" class="btn-primary btn-full" style="margin-top: 1.2rem;">
+                    Crear clase
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- CREAR USUARIO + TABLA USUARIOS -->
+    <div class="admin-grid">
+
         <div class="card">
             <div class="card-header">
                 <h2>Crear usuario</h2>
@@ -82,38 +190,30 @@
             {% endif %}
 
             <form action="/crear_usuario" method="post" class="form-box">
-
                 <label>Nombre:</label>
                 <input type="text" name="nombre" placeholder="Nombre completo" required>
-
                 <label>Correo:</label>
                 <input type="email" name="correo" placeholder="correo@ejemplo.com" required>
-
                 <label>Password:</label>
                 <input type="password" name="password" placeholder="••••••••" required>
-
                 <label>Rol:</label>
                 <select name="rol" class="form-select">
                     <option value="estudiante">Estudiante</option>
                     <option value="profesor">Profesor</option>
                     <option value="admin">Admin</option>
                 </select>
-
                 <button type="submit" class="btn-primary btn-full" style="margin-top:1.2rem;">
-                    Crear Usuario
+                    Crear usuario
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
                 </button>
-
             </form>
         </div>
 
-        <!-- TABLA USUARIOS -->
         <div class="card">
             <div class="card-header">
                 <h2>Usuarios registrados</h2>
                 <span class="badge-count">{{ usuarios | length }}</span>
             </div>
-
             <div class="usuarios-tabla">
                 <div class="tabla-header">
                     <span>Nombre</span>
@@ -128,15 +228,9 @@
                         {{ u.nombre }}
                     </span>
                     <span class="tabla-correo">{{ u.correo }}</span>
-                    <span>
-                        <span class="role-chip role-{{ u.rol }}">{{ u.rol }}</span>
-                    </span>
+                    <span><span class="role-chip role-{{ u.rol }}">{{ u.rol }}</span></span>
                     <span class="tabla-asistencias">
-                        {% if u.rol == 'estudiante' %}
-                            {{ u.asistencias }} / 10
-                        {% else %}
-                            —
-                        {% endif %}
+                        {% if u.rol == 'estudiante' %}{{ u.asistencias }} / 10{% else %}—{% endif %}
                     </span>
                 </div>
                 {% endfor %}
@@ -163,15 +257,15 @@
                 <span class="tool-icon">🚘</span>
                 <span>Vehículos (próximamente)</span>
             </div>
-            <div class="tool-btn tool-disabled">
-                <span class="tool-icon">📅</span>
-                <span>Horarios (próximamente)</span>
-            </div>
         </div>
     </div>
 
 </div>
 </div>
+
+<footer class="landing-footer">
+    <p>© 2026 ConduPro · Hecho para escuelas de conducción en Colombia</p>
+</footer>
 
 </body>
 </html>
